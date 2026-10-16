@@ -1,9 +1,30 @@
 plugins {
-    id 'net.neoforged.moddev' version '1.0.15'
+    id 'net.neoforged.moddev' version '2.0.17'
 }
-neoForm {
-    version = "1.21.1-21.1.58"
+
+group = 'com.example'
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+    maven { url = "https://maven.neoforged.net/releases" }
 }
-dependencies {
-    implementation "net.neoforged:neoforge:21.1.58"
+
+neoForge {
+    version = "21.1.58"
+    
+    runs {
+        client {
+            client()
+        }
+        server {
+            server()
+        }
+    }
+    
+    mods {
+        regenmod {
+            sourceSet sourceSets.main
+        }
+    }
 }
