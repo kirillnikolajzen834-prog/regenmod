@@ -1,0 +1,9 @@
+plugins {
+    id 'net.neoforged.moddev' version '1.0.15'
+}
+neoForm {
+    version = "1.21.1-21.1.58"
+}
+dependencies {
+    implementation "net.neoforged:neoforge:21.1.58"
+}
