@@ -14,9 +14,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -28,7 +25,6 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
@@ -67,30 +63,6 @@ public class RegenMod {
     private void registerNetwork(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar(MODID).versioned("1.0.0");
         registrar.playToServer(AssemblePayload.TYPE, AssemblePayload.STREAM_CODEC, AssemblePayload::handle);
-    }
-
-    public record AssemblePayload() implements CustomPacketPayload {
-        public static final CustomPacketPayload.Type<AssemblePayload> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(MODID, "assemble"));
-        public static final StreamCodec<FriendlyByteBuf, AssemblePayload> STREAM_CODEC = StreamCodec.unit(new AssemblePayload());
-        
-        @Override 
-        public CustomPacketPayload.Type<? extends CustomPacketPayload> type() { 
-            return TYPE; 
-        }
-        
-        public static void handle(AssemblePayload payload, IPayloadContext context) {
-            context.enqueueWork(() -> {
-                if (context.player() instanceof ServerPlayer player) {
-                    UUID uuid = player.getUUID();
-                    if (GameplayEvents.shatteredPlayers.contains(uuid)) {
-                        GameplayEvents.shatteredPlayers.remove(uuid);
-                        player.setInvisible(false);
-                        player.setHealth(player.getMaxHealth());
-                        player.serverLevel().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 1.0F, 1.0F);
-                    }
-                }
-            });
-        }
     }
 
     @Mod.EventBusSubscriber(modid = MODID)
