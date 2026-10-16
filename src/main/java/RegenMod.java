@@ -1,3 +1,5 @@
+package com.example.regenmod;
+
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -40,10 +42,11 @@ import java.util.HashSet;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Mod("regenmod")
+@Mod(RegenMod.MODID)
 public class RegenMod {
     public static final String MODID = "regenmod";
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MODID);
+    
     public static final DeferredItem<Item> REGENERATION_SYRINGE = ITEMS.register("regeneration_syringe", () -> new Item(new Item.Properties().stacksTo(1)) {
         @Override
         public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
@@ -67,9 +70,14 @@ public class RegenMod {
     }
 
     public record AssemblePayload() implements CustomPacketPayload {
-        public static final Type<AssemblePayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(MODID, "assemble"));
+        public static final CustomPacketPayload.Type<AssemblePayload> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(MODID, "assemble"));
         public static final StreamCodec<FriendlyByteBuf, AssemblePayload> STREAM_CODEC = StreamCodec.unit(new AssemblePayload());
-        @Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
+        
+        @Override 
+        public CustomPacketPayload.Type<? extends CustomPacketPayload> type() { 
+            return TYPE; 
+        }
+        
         public static void handle(AssemblePayload payload, IPayloadContext context) {
             context.enqueueWork(() -> {
                 if (context.player() instanceof ServerPlayer player) {
